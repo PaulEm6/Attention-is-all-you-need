@@ -40,6 +40,10 @@ val_data = data[n:]
 # data loading
 def get_batch(split):
     # generate a small batch of data of inputs x and targets y
+    # Maps inputs x and targets y in an autoregerssive manner for each block in the batch
+        # Token position 0 has an output of token position 1
+        # Tokens position 0 to 1 have an output of token position 2
+        # Tokens position 0 to 2 have an output of token position 3 
     data = train_data if split == 'train' else val_data
     ix = torch.randint(len(data) - block_size, (batch_size,))
     x = torch.stack([data[i:i+block_size] for i in ix])
