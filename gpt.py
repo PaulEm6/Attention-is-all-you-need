@@ -179,6 +179,8 @@ class GPTLanguageModel(nn.Module):
         return logits, loss
 
     def generate(self, idx, max_new_tokens):
+    #For each block within the batch, this method generates the most probable token(s) to come next
+    #For simple use, pass a batch of only one block to this method in order to simulate "ChatGPT" like interaction of "prompt" and "answer"
         # idx is (B, T) array of indices in the current context
         for _ in range(max_new_tokens):
             # crop idx to the last block_size tokens
