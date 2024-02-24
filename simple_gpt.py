@@ -11,7 +11,7 @@ block_size = 8 #maximum number of tokens to be considered as one "input"
 n_embed = 32 #dimension of vector after embedding
 
 class BigramLanguageModel(nn.Module):
-    def __init_(self, voca):
+    def __init__(self):
         super.__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, n_embed)
         self.position_embedding_table = nn.Embedding(block_size, n_embed)
