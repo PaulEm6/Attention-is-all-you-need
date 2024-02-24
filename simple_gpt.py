@@ -17,6 +17,7 @@ class BigramLanguageModel(nn.Module):
         self.position_embedding_table = nn.Embedding(block_size, n_embed)
 
     def forward(self, idx):
+        B, T = idx.shape
         token_embedding = self.token_embedding_table(idx)
         positional_embedding = self.token_embedding_table(torch.arange(T, device=device))
         x = token_embedding + positional_embedding
