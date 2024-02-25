@@ -1,5 +1,9 @@
-residual connection
-normalization layers
-optimizer used
-tokenization used
+simple: one block of single head attention
+        separated embed, transformer and output block
+
+    - tokenization used
+    - residual connection
+    - normalization layers
+    - optimizer used
+    
 dataset used
