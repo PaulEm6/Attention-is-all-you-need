@@ -6,16 +6,14 @@ from torch.nn import functional as F
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
-batch_size = 64 # how many independent sequences will we process in parallel?
-block_size = 256 #maximum number of tokens to be considered as "input" for predictions
+batch_size = 4 # how many independent sequences will we process in parallel?
+block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
 max_iters = 10
 eval_interval = 1
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-eval_iters = 200
-n_head = 6
-n_layer = 6
+eval_iters = 2
 dropout = 0.2
 #Preparing Environment for training
 torch.manual_seed(1337)
@@ -85,13 +83,15 @@ class EmbeddingBlock(nn.Module):
 
 class AttentionBlock(nn.Module):
     #Communication followed by computation i.e. Attention block followed by FeedForward MLP
-    #Head_size is the dimensino of the otuput of the key, query, value layers
+    #Head_size is the dimension of the otuput of the key, query, value layers
     #We do not use bias
     def __init__(self, head_size):
         super().__init__()
         self.key = nn.Linear(n_embed, head_size, bias=False)
         self.query = nn.Linear(n_embed, head_size, bias=False)
         self.value = nn.Linear(n_embed, head_size, bias=False)
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
         #Input size (Batch size, Time step, Channels)
@@ -164,6 +164,7 @@ class LanguageModel(nn.Module):
         self.OutputBlock = OutputBlock(n_embed)
 
     def forward(self, idx, targets = None):
+        B, T = idx.shape
         x = self.EmbeddingBlock(idx) #(B, T, C)
         x = self.TransformerBlock(x) #(B, T, C)
         logits = self.OutputBlock(x) #(B, T, Vocab size)
@@ -177,25 +178,6 @@ class LanguageModel(nn.Module):
             loss = F.cross_entropy(logits, targets)
 
         return logits, loss
-    
-    def generate(self, idx, max_new_tokens):
-    #For each block within the batch, this method generates the most probable token(s) to come next
-    #For simple use, pass a batch of only one block to this method in order to simulate "ChatGPT" like interaction of "prompt" and "answer"
-        # idx is (B, T) array of indices in the current context
-        for _ in range(max_new_tokens):
-            # crop idx to the last block_size tokens
-            idx_cond = idx[:, -block_size:]
-            # get the predictions
-            logits, loss = self(idx_cond)
-            # focus only on the last time step
-            logits = logits[:, -1, :] # becomes (B, C)
-            # apply softmax to get probabilities
-            probs = F.softmax(logits, dim=-1) # (B, C)
-            # sample from the distribution
-            idx_next = torch.multinomial(probs, num_samples=1) # (B, 1)
-            # append sampled index to the running sequence
-            idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
-        return idx
 
 model = LanguageModel()
 m = model.to(device)
