@@ -1,0 +1,5 @@
+residual connection
+normalization layers
+optimizer used
+tokenization used
+dataset used
