@@ -14,7 +14,7 @@ Simple Implementation based on Tutorial of Andrej:
 
         Compare optimizer used (impact on training time)
 
-Qualatative and Quantative Analysis of output based on different datasets used:
+Qualatative and Quantative Analysis of output based on different datasets used (Original code):
     - OneDrive
     - Lyrics of on artist
     - Little Shakespeare
