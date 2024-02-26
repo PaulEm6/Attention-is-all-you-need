@@ -1,9 +1,12 @@
 simple: one block of single head attention
         separated embed, transformer and output block
 
-    - tokenization used
-    - residual connection
-    - normalization layers
-    - optimizer used
-    
-dataset used
+Compare different tokenization methods
+
+Compare impact of residual connection and normalization layers
+
+Compare optimizer used
+
+Output based on different datasets used:
+    - OneDrive
+    - Lyrics of on artist
