@@ -1,12 +1,25 @@
-simple: one block of single head attention
-        separated embed, transformer and output block
+Objective: How does GPT work? Really. (Extra Credit, Resume)
 
-Compare different tokenization methods
+Explanation of Theory: Attention is all you need
 
-Compare impact of residual connection and normalization layers
+Simple Implementation based on Tutorial of Andrej:
+        Decoder only Transformer:
+                - one block of single head attention
+                - separated embed, transformer and output block
+                - Experimentaiton of Transformer implementation
 
-Compare optimizer used
+        Compare different tokenization methods (sub word vs character tokenization)
 
-Output based on different datasets used:
+        Compare impact of residual connection and normalization layers (impact on loss)
+
+        Compare optimizer used (impact on training time)
+
+Qualatative and Quantative Analysis of output based on different datasets used:
     - OneDrive
     - Lyrics of on artist
+    - Little Shakespeare
+
+Extension: 
+        - Self attention       
+        - Sentiment analysis
+        - Multi block multi head attention
