@@ -3,10 +3,10 @@ Objective: How does GPT work? Really. (Extra Credit, Resume)
 Explanation of Theory: Attention is all you need
 
 Simple Implementation based on Tutorial of Andrej:
-        Decoder only Transformer:
+        Decoder only Transformer (save model_simple and complex):
                 - one block of single head attention
                 - separated embed, transformer and output block
-                - Experimentaiton of Transformer implementation
+                - test results with 5000 iterations (if decent then continue)
 
         Compare different tokenization methods (sub word vs character tokenization)
 
@@ -15,9 +15,9 @@ Simple Implementation based on Tutorial of Andrej:
         Compare optimizer used (impact on training time)
 
 Qualatative and Quantative Analysis of output based on different datasets used (Original code):
-    - OneDrive
-    - Lyrics of on artist
-    - Little Shakespeare
+    - OneDrive (regex)
+    - Lyrics of on artist (web scrap)
+    - Little Shakespeare (original)
 
 Extension: 
         - Self attention       

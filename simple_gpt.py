@@ -9,11 +9,11 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 batch_size = 4 # how many independent sequences will we process in parallel?
 block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
-max_iters = 10
-eval_interval = 1
+max_iters = 5000
+eval_interval = 500
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-eval_iters = 2
+eval_iters = 10
 dropout = 0.2
 #Preparing Environment for training
 torch.manual_seed(1337)
