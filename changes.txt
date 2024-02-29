@@ -10,8 +10,6 @@ Simple Implementation based on Tutorial of Andrej:
 
         Compare different tokenization methods (sub word vs character tokenization)
 
-        Compare impact of residual connection and normalization layers (impact on loss)
-
         Compare optimizer used (impact on training time)
 
 Qualatative and Quantative Analysis of output based on different datasets used (Original code):
