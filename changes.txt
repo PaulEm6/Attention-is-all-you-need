@@ -14,6 +14,7 @@ Simple Implementation based on Tutorial of Andrej:
 
 Qualatative and Quantative Analysis of output based on different datasets used (Original code):
     - OneDrive (regex)
+    - Game of Thrones (Chapter)
     - Lyrics of on artist (web scrap)
     - Little Shakespeare (original)
 
