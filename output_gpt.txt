@@ -1,0 +1,36 @@
+    GPT: B: 64, T: 256, C: 384 => 384 / 64 = 6, 6 number of transformer heads
+        Training is using cuda
+        10.788929 M parameters
+        step 0: train loss 4.2194, val loss 4.2291
+        step 50: train loss 2.5999, val loss 2.5976
+        step 100: train loss 2.4837, val loss 2.5007
+        step 150: train loss 2.4369, val loss 2.4606
+        step 200: train loss 2.4037, val loss 2.4264
+        step 250: train loss 2.3337, val loss 2.3773
+        step 300: train loss 2.2331, val loss 2.2763
+        step 350: train loss 2.0638, val loss 2.1519
+        step 400: train loss 1.9265, val loss 2.0422
+        step 450: train loss 1.8239, val loss 1.9575
+        step 499: train loss 1.7390, val loss 1.8942
+
+        BIUS:
+        Gode ones? He hit nother;' baw I this a torthen;
+        You whey not hearse ormselg stath orge, doth ispores
+        dienes
+        The befor of and tids.
+        Wereint theing mown gratch: fen will word
+        Then Lend wity trand I ill ence: kin a hare your thouss?
+
+        CLY:
+        Shall potgla? Edwc ann and my our thor wither?
+
+        BENMAS:
+        And hearab bair, an! I have his ig lave anotch,
+        Thes a mught  be bein erserviced.
+
+        ISABELLg:
+        I most Edwert, groaill fends head, tagn?
+
+        NORD:
+        It me No'n go if grver'besonen, so sold,
+        Bunce, lik, and whi

@@ -169,6 +169,7 @@ class GPTLanguageModel(nn.Module):
         x = self.blocks(x) # (B,T,C)
         x = self.ln_f(x) # (B,T,C)
         logits = self.lm_head(x) # (B,T,vocab_size)
+        B,T, C = logits.shape
 
         if targets is None:
             loss = None

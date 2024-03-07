@@ -6,14 +6,14 @@ from torch.nn import functional as F
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
-batch_size = 4 # how many independent sequences will we process in parallel?
+batch_size = 32 # how many independent sequences will we process in parallel?
 block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
-max_iters = 500
-eval_interval = 50
+max_iters = 5000
+eval_interval = 500
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-eval_iters = 10
+eval_iters = 200
 dropout = 0.2
 #Preparing Environment for training
 torch.manual_seed(1337)
@@ -166,8 +166,11 @@ class LanguageModel(nn.Module):
     def forward(self, idx, targets = None):
         B, T = idx.shape
         x = self.EmbeddingBlock(idx) #(B, T, C)
+        B, T, C = x.shape
         x = self.TransformerBlock(x) #(B, T, C)
+        B, T, C = x.shape
         logits = self.OutputBlock(x) #(B, T, Vocab size)
+        B, T, C = logits.shape
 
         if targets is None:
             loss = None
@@ -181,8 +184,10 @@ class LanguageModel(nn.Module):
     def generate(self, idx, max_new_tokens):
         # idx is (B, T) array of indices in the current context
         for _ in range(max_new_tokens):
+            # crop idx to the last block_size tokens
+            idx_cond = idx[:, -block_size:]
             # get the predictions
-            logits, loss = self(idx)
+            logits, loss = self(idx_cond)
             # focus only on the last time step
             logits = logits[:, -1, :] # becomes (B, C)
             # apply softmax to get probabilities
@@ -191,6 +196,7 @@ class LanguageModel(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1) # (B, 1)
             # append sampled index to the running sequence
             idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
+        return idx
 
 model = LanguageModel()
 m = model.to(device)
