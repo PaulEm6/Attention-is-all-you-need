@@ -9,6 +9,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 batch_size = 32 # how many independent sequences will we process in parallel?
 block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
+n_blocks = 6 #number of sequential attention blocks
+
 max_iters = 5000
 eval_interval = 500
 learning_rate = 3e-4
@@ -160,14 +162,15 @@ class LanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.EmbeddingBlock = EmbeddingBlock()
-        self.TransformerBlock = TransformerBlock(n_embed) 
+        #We associate multiple Transformer blocks in series, using list comprehension and unpacking the list with the asterisk
+        self.TransformerBlocks = nn.Sequential(*[TransformerBlock(n_embed) for _ in range(n_blocks)])
         self.OutputBlock = OutputBlock(n_embed)
 
     def forward(self, idx, targets = None):
         B, T = idx.shape
         x = self.EmbeddingBlock(idx) #(B, T, C)
         B, T, C = x.shape
-        x = self.TransformerBlock(x) #(B, T, C)
+        x = self.TransformerBlocks(x) #(B, T, C)
         B, T, C = x.shape
         logits = self.OutputBlock(x) #(B, T, Vocab size)
         B, T, C = logits.shape

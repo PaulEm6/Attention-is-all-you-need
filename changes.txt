@@ -4,11 +4,15 @@ Explanation of Theory: Attention is all you need
 
 Simple Implementation based on Tutorial of Andrej:
         Decoder only Transformer (save model_simple and complex):
-                - one block of single head attention
+                - multiples blocks of single head attention
                 - separated embed, transformer and output block
                 - test results with 5000 iterations (if decent then continue)
 
-        Compare different tokenization methods (sub word vs character tokenization)
+        TO DO:
+                - implement parralel multi head attention block, applies multiple heads of attention in parralel
+                concatenantes the results
+
+        Compare different tokenization methods (sub word tiktoken and sentence piece vs character tokenization)
 
         Compare optimizer used (impact on training time)
 
