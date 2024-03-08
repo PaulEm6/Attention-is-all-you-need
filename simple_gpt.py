@@ -1,8 +1,7 @@
-#Implementation of attention powered Transformer with single head attention and sub word tokenization
-
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from tiktoken import TikToken
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
@@ -10,6 +9,7 @@ batch_size = 32 # how many independent sequences will we process in parallel?
 block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
 n_blocks = 6 #number of sequential attention blocks
+vocab_size = 50000 #Dictionary size i.e. amount of possible sub words tokens to be created from dataset 
 
 max_iters = 5000
 eval_interval = 500
@@ -24,16 +24,27 @@ torch.manual_seed(1337)
 with open('input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
-# here are all the unique characters that occur in this text
-chars = sorted(list(set(text)))
-vocab_size = len(chars)
+
 
 '''Preparing Input'''
-# create a mapping from characters to integers
-stoi = { ch:i for i,ch in enumerate(chars) }
-itos = { i:ch for i,ch in enumerate(chars) }
-encode = lambda s: [stoi[c] for c in s] # encoder: take a string, output a list of integers
-decode = lambda l: ''.join([itos[i] for i in l]) # decoder: take a list of integers, output a string
+# create a mapping from input data to sub words tokens
+
+# Initialize the TikToken tokenizer
+tokenizer = TikToken()
+
+# Encode function using TikToken tokenizer
+encode = lambda s: tokenizer.encode(s).ids
+
+# Decode function using TikToken tokenizer
+decode = lambda l: tokenizer.decode(l)
+
+encoded_text = encode(text)
+
+# Get the vocabulary size
+vocab_size = len(tokenizer.get_vocab())
+
+
+
 
 # Train and test splits
 data = torch.tensor(encode(text), dtype=torch.long)
