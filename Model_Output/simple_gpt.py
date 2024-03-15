@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from tiktoken import 
+from tiktoken import get_encoding
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
