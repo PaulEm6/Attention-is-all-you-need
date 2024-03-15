@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from tiktoken import get_encoding
+import sentencepiece as spm
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
@@ -9,7 +10,7 @@ batch_size = 32 # how many independent sequences will we process in parallel?
 block_size = 8 #maximum number of tokens to be considered as "input" for predictions
 n_embed = 32 #dimension of vector after embedding
 n_blocks = 6 #number of sequential attention blocks
-vocab_size = 50000 #Dictionary size i.e. amount of possible sub words tokens to be created from dataset 
+vocab_size = 65 #Dictionary size i.e. amount of possible sub words tokens to be created from dataset 
 
 max_iters = 5000
 eval_interval = 500
@@ -24,30 +25,20 @@ torch.manual_seed(1337)
 with open('input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
-
-
 '''Preparing Input'''
 # create a mapping from input data to sub words tokens
 
-# Initialize the TikToken tokenizer
-tokenizer = TikToken()
+# Train SentencePiece model with BPE
+spm.SentencePieceTrainer.Train(input='input.txt', model_prefix='spm_model', vocab_size=vocab_size, model_type='bpe', minloglevel = 2)
 
-# Encode function using TikToken tokenizer
-encode = lambda s: tokenizer.encode(s).ids
-
-# Decode function using TikToken tokenizer
-decode = lambda l: tokenizer.decode(l)
-
-encoded_text = encode(text)
-
-# Get the vocabulary size
-vocab_size = len(tokenizer.get_vocab())
-
-
-
+sp = spm.SentencePieceProcessor()
+sp.Load(model_file='spm_model.model')
 
 # Train and test splits
-data = torch.tensor(encode(text), dtype=torch.long)
+data = torch.tensor(sp.Encode(text, out_type=int), dtype=torch.long)
+
+
+
 n = int(0.9*len(data)) # first 90% will be train, rest val
 train_data = data[:n]
 val_data = data[n:]
@@ -239,5 +230,5 @@ for iter in range(max_iters):
 
 # generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
-print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
+print(sp.Decode(m.generate(context, max_new_tokens=500)[0].tolist(), out_type=str))
 #open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
