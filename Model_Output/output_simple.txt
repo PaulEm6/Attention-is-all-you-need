@@ -1,34 +1,45 @@
+'''Hyperparameters'''
+batch_size = 32 # how many independent sequences will we process in parallel?
+block_size = 8 #maximum number of tokens to be considered as "input" for predictions
+n_embed = 384 #dimension of vector after embedding
+n_blocks = 6 #number of sequential attention blocks
+num_heads = 6
 
-    Simple: B 32, T 8, C 32
-        Training is using cuda
-        9.857 K parameters
-        step 0: train loss 4.4274, val loss 4.4152
-        step 500: train loss 2.9582, val loss 3.0009
-        step 1000: train loss 2.7284, val loss 2.7490
-        step 1500: train loss 2.6373, val loss 2.6470
-        step 2000: train loss 2.5671, val loss 2.5737
-        step 2500: train loss 2.5351, val loss 2.5442
-        step 3000: train loss 2.5077, val loss 2.5110
-        step 3500: train loss 2.4745, val loss 2.4888
-        step 4000: train loss 2.4630, val loss 2.4705
-        step 4500: train loss 2.4437, val loss 2.4601
-        step 4999: train loss 2.4321, val loss 2.4451
+max_iters = 500
+eval_interval = 50
+learning_rate = 3e-4
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+eval_iters = 10
+dropout = 0.2
 
-        J'ead naid Zs,
-        The!s?
-        B bunon, my cevistled posaveay t!hue of rokr urteve ichy fitnkhe fes tewees?
-        Wiy ouchelesw, qmy
-        I
-        tomelipousthe re aey moun, tpir thaonl tpatour st tho nierlvel,
-        Tthid'
-        DNy CA;
-        Andowulite keas wae.
-        tholononeauef
-        TLik d distt ceen my st bollod he ane
-        Wrope?
-        Idore kAmis mo'gh amund Foue-
-        and; toufrust, igan hd hlus mells.e brnoud ardy tof thamissnd feo endowed tuvenr mert techile couiind:lste ore, forel t vo-uckele
-        A:
-        ANoncet!nowet?
-        DThe'del llwis t,ngherigith
-        Bllls cof bayo
+23.073089 M parameters
+step 0: train loss 4.2858, val loss 4.2822
+step 50: train loss 2.8966, val loss 2.8577
+step 100: train loss 2.5107, val loss 2.5362
+step 150: train loss 2.4395, val loss 2.4498
+step 200: train loss 2.3571, val loss 2.3769
+step 250: train loss 2.3198, val loss 2.3271
+step 300: train loss 2.3040, val loss 2.2922
+step 350: train loss 2.2539, val loss 2.2496
+step 400: train loss 2.2060, val loss 2.2751
+step 450: train loss 2.1828, val loss 2.1991
+step 499: train loss 2.1561, val loss 2.1613
+
+To inke, is you dommaen,
+Fior Bet my sepaeinf:
+Whengeed of of Thent'pas tice tayints anot that theve, suntor eare to camevesse denden, tealnpes!
+As dave of hish and whus me mos.
+
+For Bome.
+
+Aple,
+DUd perdoous hear Ewaplice his pereakty's, Lece a Rovesyestit'-ce.
+Dh wor'RY'ld of anit of porcayWe tumed, thand kas beeans, swe aurgaion anom your haded?
+
+But ond to itoll on deelon arand--it your wact pareae as with thy cearverl in;
+Hust ya us soverst;' se!
+Cet?
+
+Whon dofe ton dwith stored,
+
+Bor tove

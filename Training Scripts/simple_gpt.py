@@ -1,22 +1,21 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-import sentencepiece as spm
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 '''Hyperparameters'''
-batch_size = 64 # how many independent sequences will we process in parallel?
-block_size = 256 #maximum number of tokens to be considered as "input" for predictions
-n_embed = 32 #dimension of vector after embedding
+batch_size = 32 # how many independent sequences will we process in parallel?
+block_size = 8 #maximum number of tokens to be considered as "input" for predictions
+n_embed = 384 #dimension of vector after embedding
 n_blocks = 6 #number of sequential attention blocks
-vocab_size = 4000 #Dictionary size i.e. amount of possible sub words tokens to be created from dataset 
+num_heads = 6
 
-max_iters = 5000
-eval_interval = 500
+max_iters = 500
+eval_interval = 50
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-eval_iters = 200
+eval_iters = 10
 dropout = 0.2
 #Preparing Environment for training
 torch.manual_seed(1337)
@@ -25,18 +24,18 @@ torch.manual_seed(1337)
 with open('input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
-'''Preparing Input'''
-# create a mapping from input data to sub words tokens
+# here are all the unique characters that occur in this text
+chars = sorted(list(set(text)))
+vocab_size = len(chars)
 
-# Train SentencePiece model with BPE
-spm.SentencePieceTrainer.Train(input='input.txt', model_prefix='spm_model', vocab_size=vocab_size, model_type='bpe', minloglevel = 2)
-
-sp = spm.SentencePieceProcessor()
-sp.Load(model_file='spm_model.model')
+# create a mapping from characters to integers
+stoi = { ch:i for i,ch in enumerate(chars) }
+itos = { i:ch for i,ch in enumerate(chars) }
+encode = lambda s: [stoi[c] for c in s] # encoder: take a string, output a list of integers
+decode = lambda l: ''.join([itos[i] for i in l]) # decoder: take a list of integers, output a string
 
 # Train and test splits
-data = torch.tensor(sp.Encode(text, out_type=int), dtype=torch.long)
-
+data = torch.tensor(encode(text), dtype=torch.long)
 n = int(0.9*len(data)) # first 90% will be train, rest val
 train_data = data[:n]
 val_data = data[n:]
@@ -83,7 +82,7 @@ class EmbeddingBlock(nn.Module):
         x = token_embedding + positional_embedding #Output is (B, T, C)
         return x
 
-class AttentionBlock(nn.Module):
+class SingleHeadAttentionBlock(nn.Module):
     #Communication followed by computation i.e. Attention block followed by FeedForward MLP
     #Head_size is the dimension of the otuput of the key, query, value layers
     #We do not use bias
@@ -101,7 +100,7 @@ class AttentionBlock(nn.Module):
 
         B, T, C = x.shape
         k = self.key(x)
-        q = self.key(x)
+        q = self.query(x)
         
         #Calculation of affinities between each token using the values from the key and query, "implementation of self attention" because current tokens
         #Only get information from previous tokens (triangular inferior matrix)
@@ -115,6 +114,22 @@ class AttentionBlock(nn.Module):
         out = wei @ v # (B, T, T) @ (B, T, hs) -> (B, T, hs)
         return out
     
+class MultiheadAttentionBlock(nn.Module):
+    #We will apply multiple heads of attention in parrallel, the output of these heads will be concatenated
+    #We then apply projector layer followed by a dropout layer
+
+    def __init__(self,  num_heads, head_size):
+        super().__init__()
+        self.heads = nn.ModuleList([SingleHeadAttentionBlock(head_size) for _ in range(num_heads)])
+        self.project = nn.Linear(head_size*num_heads, n_embed)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        out = self.project(out)
+        out = self.dropout(out)
+        return(out)
+
 class FeedForwardBlock(nn.Module):
     #Multiple Layer Perceptron
     def __init__(self, n_embed):
@@ -135,13 +150,13 @@ class TransformerBlock(nn.Module):
     #We add layer normalization and residual connections to improve results
     def __init__(self, n_embed):
         super().__init__()
-        self.AttentionBlock = AttentionBlock(n_embed)
+        self.MultiHeadAttentionBlock = MultiheadAttentionBlock(n_embed, num_heads)
         self.FeedForwardBlock = FeedForwardBlock(n_embed)
         self.ln1 = nn.LayerNorm(n_embed)
         self.ln2 = nn.LayerNorm(n_embed)
         
     def forward(self, x):
-        x = x + self.ln1(self.AttentionBlock(x))
+        x = x + self.ln1(self.MultiHeadAttentionBlock(x))
         x = x + self.ln2(self.FeedForwardBlock(x))
         return(x)
 
@@ -205,7 +220,7 @@ model = LanguageModel()
 m = model.to(device)
 print("Training is using " + device)
 # print the number of parameters in the model
-print(sum(p.numel() for p in m.parameters())/1e3, 'K parameters')
+print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters')
 
 # create a PyTorch optimizer
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
@@ -227,6 +242,7 @@ for iter in range(max_iters):
     optimizer.step() #Update the parameters of the model
 
 # generate from the model
+#For sentencepiece context = sp.encode("\n")
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
-print(sp.Decode(m.generate(context, max_new_tokens=500)[0].tolist(), out_type=str))
+print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
 #open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
