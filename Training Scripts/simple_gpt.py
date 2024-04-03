@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+import time
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -11,7 +12,7 @@ n_embed = 384 #dimension of vector after embedding
 n_blocks = 6 #number of sequential attention blocks
 num_heads = 6
 
-max_iters = 500
+max_iters = 1000
 eval_interval = 50
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -225,6 +226,8 @@ print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters')
 # create a PyTorch optimizer
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
+start_time = time.time()
+
 for iter in range(max_iters):
 
     # every once in a while evaluate the loss on train and val sets
@@ -240,6 +243,12 @@ for iter in range(max_iters):
     optimizer.zero_grad(set_to_none=True) #Set the gradient to zero
     loss.backward() #Apply back propagation
     optimizer.step() #Update the parameters of the model
+
+end_time = time.time()
+
+time_elapsed = end_time - start_time 
+
+print(str(time_elapsed/60) + "m:" + str(time_elapsed//60) + "s elapsed")
 
 # generate from the model
 #For sentencepiece context = sp.encode("\n")
